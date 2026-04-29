@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pumeon Productions — Find Your Package</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf9f7;
+      --surface: #ffffff;
+      --border: rgba(0,0,0,0.10);
+      --border-hover: rgba(0,0,0,0.22);
+      --border-strong: rgba(0,0,0,0.38);
+      --text-primary: #111110;
+      --text-secondary: #5f5e5a;
+      --text-tertiary: #9a9892;
+      --accent: #111110;
+      --accent-fg: #ffffff;
+      --radius-md: 8px;
+      --radius-lg: 14px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 560px;
+      overflow: hidden;
+    }
+
+    .qhdr {
+      text-align: center;
+      padding: 2.8rem 2rem 1.4rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 0.5rem;
+    }
+
+    .qtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.2;
+      color: var(--text-primary);
+    }
+
+    .qsub {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 0.5rem;
+    }
+
+    .prog-wrap {
+      height: 2px;
+      background: var(--border);
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .step {
+      padding: 2rem;
+      animation: fadeUp 0.35s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .slabel {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 0.5rem;
+    }
+
+    .sq {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 23px;
+      font-weight: 400;
+      margin-bottom: 0.35rem;
+      line-height: 1.3;
+    }
+
+    .shint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 1.4rem;
+      line-height: 1.6;
+    }
+
+    .multi-hint {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-bottom: 0.8rem;
+      font-style: italic;
+    }
+
+    .ogrid { display: grid; gap: 9px; }
+
+    .obtn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 16px;
+      background: var(--surface);
+      border: 0.5px solid var(--border-hover);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s, background 0.2s;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .obtn:hover { border-color: var(--border-strong); background: #f5f4f2; }
+    .obtn.sel, .obtn.multi-sel { border: 1.5px solid var(--accent); background: #f5f4f2; }
+
+    .omark {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border-hover);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--surface);
+    }
+
+    .obtn.sel .omark, .obtn.multi-sel .omark {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .otxt strong { display: block; font-weight: 500; font-size: 13px; }
+    .otxt span { font-size: 11px; color: var(--text-secondary); margin-top: 1px; display: block; }
+
+    .navrow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+    }
+
+    .bbk {
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 8px 0;
+    }
+    .bbk:hover { color: var(--text-primary); }
+
+    .bnxt {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 10px 24px;
+      background: var(--accent);
+      color: var(--accent-fg);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .bnxt:disabled { opacity: 0.3; cursor: default; }
+    .bnxt:not(:disabled):hover { opacity: 0.82; }
+
+    /* Result styles */
+    .rwrap { padding: 2rem; animation: fadeUp 0.45s ease both; }
+
+    .reyebrow {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 0.4rem;
+    }
+
+    .rhead {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 400;
+      margin-bottom: 0.35rem;
+    }
+
+    .rtag {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 1.6rem;
+      line-height: 1.6;
+    }
+
+    .summary-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.6rem; }
+
+    .sum-pill {
+      font-size: 11px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border-hover);
+      color: var(--text-secondary);
+    }
+
+    /* Clickable package cards */
+    .pkcard {
+      border: 0.5px solid var(--border-hover);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+      text-decoration: none;
+      display: block;
+      color: inherit;
+    }
+
+    .pkcard:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    }
+
+    .pkcard.rec { border: 1.5px solid var(--accent); }
+    .pkcard.rec:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.12); }
+
+    .pkhdr {
+      padding: 14px 18px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .rbadge {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--accent);
+      color: var(--accent-fg);
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .pkname {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 400;
+      margin-bottom: 2px;
+    }
+
+    .pkprice { font-size: 12px; color: var(--text-secondary); }
+
+    .pkbody { padding: 13px 18px; }
+
+    .pkinc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      list-style: none;
+    }
+
+    .pkinc li { padding-left: 13px; position: relative; }
+    .pkinc li::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10px;
+      width: 5px; height: 1px;
+      background: var(--text-tertiary);
+    }
+
+    .pkbest { font-size: 11px; color: var(--text-tertiary); margin-top: 8px; font-style: italic; }
+
+    .pk-cta-hint {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 0.5px solid var(--border);
+    }
+
+    .pk-cta-hint svg { flex-shrink: 0; }
+
+    .bilingual-flag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: #f5f4f2;
+      border: 0.5px solid var(--border-hover);
+      color: var(--text-secondary);
+      margin-left: 8px;
+      vertical-align: middle;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .cocktail-note {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 0.5px solid var(--border);
+      line-height: 1.6;
+    }
+
+    .addons-box {
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 13px 16px;
+      margin-bottom: 1.2rem;
+    }
+
+    .addons-ttl {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .addons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 14px; }
+    .ai { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); }
+    .ap { color: var(--text-primary); font-weight: 500; }
+
+    .notes {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      border-top: 0.5px solid var(--border);
+      padding-top: 13px;
+      margin-bottom: 1.2rem;
+    }
+
+    .notes strong {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .travnote { font-size: 11px; color: var(--text-tertiary); margin-top: 0.6rem; font-style: italic; }
+
+    .alt-contact {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 1rem;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .txt-link {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 8px 16px;
+      border: 0.5px solid var(--border-hover);
+      border-radius: var(--radius-md);
+      transition: background 0.2s;
+    }
+    .txt-link:hover { background: #f5f4f2; }
+
+    .brst {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      padding: 8px 16px;
+      background: none;
+      border: 0.5px solid var(--border-hover);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: background 0.2s;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+    .brst:hover { background: #f5f4f2; color: var(--text-primary); }
+
+    @media (max-width: 600px) {
+      body { padding: 0; }
+      .card { border-radius: 0; border-left: none; border-right: none; max-width: 100%; }
+      .step, .rwrap { padding: 1.5rem 1.25rem; }
+      .addons-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="qhdr">
+    <p class="brand">Pumeon Productions</p>
+    <h1 class="qtitle">Find your perfect package</h1>
+    <p class="qsub">Answer a few quick questions — takes about 60 seconds</p>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <div id="qbody"></div>
+</div>
+
+<script>
+const EMAIL = 'tony@pumeon.net';
+const PHONE = '7865682732';
+const BOOKING_URL = 'https://calendly.com/pumeonproductions/bookings-info';
+
+const Qs = [
+  {
+    id:'guests', label:'Step 1 of 8', multi:false,
+    question:'How many guests are you expecting?',
+    hint:'This determines the right sound system size for your venue.',
+    opts:[
+      {label:'Under 75 guests', sub:'Intimate micro-wedding', v:'small'},
+      {label:'75–150 guests', sub:'Small to mid-size gathering', v:'medium'},
+      {label:'150–200 guests', sub:'Larger celebration', v:'large'},
+      {label:'200–500+ guests', sub:'Grand event', v:'xlarge'},
+    ]
+  },
+  {
+    id:'coverage', label:'Step 2 of 8', multi:false,
+    question:'What coverage are you looking for?',
+    hint:'Ceremony coverage requires additional equipment, mics, and setup time.',
+    opts:[
+      {label:'Reception only', sub:'4 hours of music and celebration', v:'reception'},
+      {label:'Ceremony + Reception', sub:'Full-day coverage — most popular', v:'both'},
+    ]
+  },
+  {
+    id:'cocktail', label:'Step 3 of 8', multi:false,
+    question:'Will you have a cocktail hour?',
+    hint:'Cocktail hour music sets the tone between ceremony and reception.',
+    opts:[
+      {label:'Yes, cocktail hour included', sub:'Background music during mingling', v:'yes'},
+      {label:'No cocktail hour', sub:'Going straight to the reception', v:'no'},
+      {label:'Not sure yet', sub:'We can discuss during consultation', v:'maybe'},
+    ]
+  },
+  {
+    id:'bilingual', label:'Step 4 of 8', multi:false,
+    question:'Will you need bilingual DJ / MC services?',
+    hint:'We offer bilingual Spanish/English MC services for multicultural weddings.',
+    opts:[
+      {label:'Yes — bilingual MC needed', sub:'Spanish & English hosting', v:'yes'},
+      {label:'English only', sub:'Standard MC services', v:'no'},
+      {label:'Not sure yet', sub:'We can discuss during consultation', v:'maybe'},
+    ]
+  },
+  {
+    id:'location', label:'Step 5 of 8', multi:false,
+    question:'Where is your event located?',
+    hint:'Events outside Sacramento County may include a travel fee adjustment.',
+    opts:[
+      {label:'Within Sacramento County', sub:'No travel fee', v:'local'},
+      {label:'Outside Sacramento County', sub:'Travel fee will be adjusted in quote', v:'travel'},
+    ]
+  },
+  {
+    id:'vibe', label:'Step 6 of 8', multi:false,
+    question:'What energy are you going for on the dance floor?',
+    hint:'This helps us calibrate lighting, sound levels, and music selection.',
+    opts:[
+      {label:'Elegant & intimate', sub:'Smooth transitions, ambient feel', v:'elegant'},
+      {label:'High energy — we want to party', sub:'Big bass, crowd-reading, peak moments', v:'hype'},
+      {label:'A little of both', sub:'Balance of mood and energy', v:'balanced'},
+    ]
+  },
+  {
+    id:'lighting', label:'Step 7 of 8', multi:false,
+    question:'How important is lighting to your vision?',
+    hint:'All packages include dancefloor lighting — upgrades are available.',
+    opts:[
+      {label:'Standard lighting is fine', sub:'Gig Bar 2 dancefloor effects included', v:'basic'},
+      {label:'I want upgraded lighting', sub:'Moving heads, uplights, or towers', v:'upgraded'},
+    ]
+  },
+  {
+    id:'extras', label:'Step 8 of 8', multi:true,
+    question:'Any extras you\'re already considering?',
+    hint:'Select all that apply — we\'ll include pricing in your summary.',
+    opts:[
+      {label:'Uplights (10)', sub:'$250 · Ambient room color', v:'uplights'},
+      {label:'Extra wireless mic', sub:'$100+ · Speeches or performers', v:'mic'},
+      {label:'Glow sticks bundle', sub:'$150+ · Dance floor fun', v:'glow'},
+      {label:'Special song edits', sub:'$100 · Custom intros or mashups', v:'edits'},
+      {label:'None for now', sub:'We can add later', v:'none'},
+    ]
+  }
+];
+
+const PKGS = {
+  essential: {
+    name:'Essential Package', price:'Starting at $1,000',
+    hours:'4 hrs · Reception only', guests:'Up to 150 guests',
+    inc:['Two QSC CP8 speakers','Dancefloor lighting (Gig Bar 2)','Reception-only coverage (4 hours)','All standard inclusions'],
+    best:'Best for small venues and intimate weddings.'
+  },
+  scaled: {
+    name:'Collections — Scaled-Down Sound', price:'Starting at $1,500',
+    hours:'5 hrs · Ceremony + Reception', guests:'Budget-conscious full-day',
+    inc:['Full ceremony audio setup (1 hr)','Wireless lapel mics (officiant + groom)','Handheld mic, PA speaker + mixer','Reception: QSC CP8 speakers','Dancefloor lighting','2 hrs setup time included'],
+    best:'Best for full-day coverage with a smaller guest count or tighter budget.'
+  },
+  collections: {
+    name:'Collections Package', price:'Starting at $2,000',
+    hours:'5 hrs · Ceremony + Reception', guests:'150–200+ guests',
+    inc:['Full ceremony audio (1 hr)','Wireless lapel mics (officiant + groom)','Handheld mic, PA speaker + mixer','Reception: Two QSC KC12 column array speakers','Dancefloor lighting','2 hrs setup time included'],
+    best:'Best for 150–200+ guests and full-day coverage.'
+  },
+  full: {
+    name:'Full Production Package', price:'Contact for pricing',
+    hours:'5 hrs · Ceremony + Reception', guests:'Up to 500 guests',
+    inc:['Full ceremony audio setup (1 hr)','2 tops + 4 subwoofers','4 lighting towers with moving heads','20 uplights included','All standard inclusions','2 hrs setup time included'],
+    best:'Best for large weddings, outdoor venues, and high-energy dance floors.'
+  }
+};
+
+const ADDONS = {
+  uplights:'Uplights (10) — $250',
+  mic:'Extra wireless mic — $100+',
+  glow:'Glow sticks bundle — $150+',
+  edits:'Special song edits — $100'
+};
+
+let ans = {}, step = 0;
+
+function recommend() {
+  const { guests, coverage } = ans;
+  if (guests === 'xlarge') return ['full'];
+  if (guests === 'large') return ['collections', 'scaled'];
+  if (guests === 'medium') return coverage === 'reception' ? ['essential','scaled'] : ['scaled','collections'];
+  if (guests === 'small') return coverage === 'reception' ? ['essential'] : ['scaled','essential'];
+  return ['essential'];
+}
+
+function buildEmailLink(pkg) {
+  const extras = (ans.extras || []).filter(x => x !== 'none');
+  const extrasLine = extras.length ? '\nAdd-ons I\'m considering: ' + extras.map(e => ADDONS[e]).join(', ') : '';
+  const cocktailLine = ans.cocktail === 'yes' ? '\nCocktail hour: Yes' : '';
+  const bilingualLine = ans.bilingual === 'yes' ? '\nBilingual MC: Yes' : '';
+  const travelLine = ans.location === 'travel' ? '\nVenue: Outside Sacramento County' : '\nVenue: Within Sacramento County';
+  const guestLabel = {small:'Under 75', medium:'75–150', large:'150–200', xlarge:'200–500+'}[ans.guests] || '';
+  const coverageLabel = ans.coverage === 'both' ? 'Ceremony + Reception' : 'Reception only';
+
+  const subject = encodeURIComponent('Wedding Inquiry — ' + pkg.name);
+  const body = encodeURIComponent(
+    'Hi Tony,\n\nI just completed the package quiz on your website and I\'m interested in the ' + pkg.name + '.\n\n' +
+    '--- My Details ---\n' +
+    'Package: ' + pkg.name + ' (' + pkg.price + ')\n' +
+    'Guest count: ' + guestLabel + ' guests\n' +
+    'Coverage: ' + coverageLabel +
+    cocktailLine + bilingualLine + travelLine + extrasLine +
+    '\n\nI\'d love to learn more and check availability. Please reach out at your earliest convenience.\n\nThank you!'
+  );
+  return 'mailto:' + EMAIL + '?subject=' + subject + '&body=' + body;
+}
+
+function buildSMSLink(pkg) {
+  const guestLabel = {small:'Under 75', medium:'75–150', large:'150–200', xlarge:'200–500+'}[ans.guests] || '';
+  const body = encodeURIComponent(
+    'Hi Tony! I\'m interested in the ' + pkg.name + ' for my wedding (' + guestLabel + ' guests). Can we chat?'
+  );
+  return 'sms:+1' + PHONE + '&body=' + body;
+}
+
+function render() {
+  const body = document.getElementById('qbody');
+  const prog = document.getElementById('prog');
+  if (step >= Qs.length) { renderResult(body, prog); return; }
+
+  prog.style.width = ((step / Qs.length) * 100) + '%';
+  const q = Qs[step];
+  const isMulti = q.multi;
+  const sel = ans[q.id];
+
+  const optsHTML = q.opts.map(o => {
+    const active = isMulti ? (ans[q.id]||[]).includes(o.v) : sel === o.v;
+    return `<button class="obtn${active ? (isMulti ? ' multi-sel' : ' sel') : ''}" data-v="${o.v}">
+      <span class="omark">${active ? '✓' : ''}</span>
+      <span class="otxt"><strong>${o.label}</strong><span>${o.sub}</span></span>
+    </button>`;
+  }).join('');
+
+  const hasAnswer = isMulti ? (ans[q.id] && ans[q.id].length > 0) : !!sel;
+
+  body.innerHTML = `<div class="step">
+    <p class="slabel">${q.label}</p>
+    <h2 class="sq">${q.question}</h2>
+    <p class="shint">${q.hint}</p>
+    ${isMulti ? '<p class="multi-hint">Select all that apply</p>' : ''}
+    <div class="ogrid">${optsHTML}</div>
+    <div class="navrow">
+      ${step > 0 ? '<button class="bbk" id="bbk">← Back</button>' : '<span></span>'}
+      <button class="bnxt" id="bnxt"${!hasAnswer ? ' disabled' : ''}>
+        ${step === Qs.length - 1 ? 'See my recommendation →' : 'Next →'}
+      </button>
+    </div>
+  </div>`;
+
+  body.querySelectorAll('.obtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const v = btn.dataset.v;
+      if (isMulti) {
+        if (v === 'none') { ans[q.id] = ['none']; }
+        else {
+          let arr = (ans[q.id] || []).filter(x => x !== 'none');
+          arr = arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v];
+          ans[q.id] = arr;
+        }
+      } else { ans[q.id] = v; }
+      render();
+    });
+  });
+
+  const nb = document.getElementById('bnxt');
+  if (nb) nb.addEventListener('click', () => { step++; render(); });
+  const bb = document.getElementById('bbk');
+  if (bb) bb.addEventListener('click', () => { step--; render(); });
+}
+
+function renderResult(body, prog) {
+  prog.style.width = '100%';
+  const recs = recommend();
+  const primary = PKGS[recs[0]];
+  const secondary = recs[1] ? PKGS[recs[1]] : null;
+
+  const summaryItems = [
+    { label: ({small:'Under 75', medium:'75–150', large:'150–200', xlarge:'200–500+'}[ans.guests]||'') + ' guests' },
+    { label: ans.coverage === 'both' ? 'Ceremony + Reception' : 'Reception only' },
+    ans.cocktail === 'yes' ? { label: 'Cocktail hour' } : null,
+    ans.bilingual === 'yes' ? { label: 'Bilingual MC' } : null,
+    ans.location === 'travel' ? { label: 'Travel fee applies' } : null,
+  ].filter(Boolean);
+
+  const extras = (ans.extras || []).filter(x => x !== 'none');
+
+  const pkHTML = (pkg, isRec) => `
+    <a class="pkcard${isRec ? ' rec' : ''}" href="${buildEmailLink(pkg)}">
+      <div class="pkhdr">
+        <div>
+          <div class="pkname">${pkg.name}${isRec && ans.bilingual === 'yes' ? '<span class="bilingual-flag">Bilingual MC available</span>' : ''}</div>
+          <div class="pkprice">${pkg.price} &nbsp;·&nbsp; ${pkg.hours} &nbsp;·&nbsp; ${pkg.guests}</div>
+        </div>
+        ${isRec ? '<span class="rbadge">Best match</span>' : ''}
+      </div>
+      <div class="pkbody">
+        <ul class="pkinc">${pkg.inc.map(i => `<li>${i}</li>`).join('')}</ul>
+        ${ans.cocktail === 'yes' ? '<p class="cocktail-note">+ Cocktail hour music included — ask about seamless flow during consultation.</p>' : ''}
+        <p class="pkbest">${pkg.best}</p>
+        <div class="pk-cta-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          Tap to inquire about this package
+        </div>
+      </div>
+    </a>`;
+
+  body.innerHTML = `<div class="rwrap">
+    <p class="reyebrow">Your personalized recommendation</p>
+    <h2 class="rhead">Here's what we'd suggest</h2>
+    <p class="rtag">Tap any package below to start the conversation — a pre-filled email will open for you. Each additional hour is $125.</p>
+
+    <div class="summary-strip">${summaryItems.map(s => `<span class="sum-pill">${s.label}</span>`).join('')}</div>
+
+    ${pkHTML(primary, true)}
+    ${secondary ? pkHTML(secondary, false) : ''}
+
+    ${extras.length ? `<div class="addons-box" style="margin-bottom:.8rem">
+      <p class="addons-ttl">Your selected add-ons</p>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.9">${extras.map(e => `<div>${ADDONS[e]}</div>`).join('')}</div>
+    </div>` : ''}
+
+    <div class="addons-box">
+      <p class="addons-ttl">All available add-ons</p>
+      <div class="addons-grid">
+        <div class="ai"><span>Uplights (10)</span><span class="ap">$250</span></div>
+        <div class="ai"><span>Extra wireless mic</span><span class="ap">$100+</span></div>
+        <div class="ai"><span>Glow sticks bundle</span><span class="ap">$150+</span></div>
+        <div class="ai"><span>Special song edits</span><span class="ap">$100</span></div>
+        <div class="ai"><span>Extra speaker setup</span><span class="ap">$150+</span></div>
+        <div class="ai"><span>Each extra hour</span><span class="ap">$125</span></div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <strong>Before you book</strong>
+      50% retainer required to secure your date &nbsp;·&nbsp; Final payment due 48 hrs before event &nbsp;·&nbsp; Overtime billed at contracted rate &nbsp;·&nbsp; Setup & teardown not counted toward service hours &nbsp;·&nbsp; Receipts provided for all transactions
+    </div>
+
+    ${ans.location === 'travel' ? '<p class="travnote">* Your venue is outside Sacramento County — a travel fee will be reflected in your final quote.</p>' : ''}
+    ${ans.bilingual === 'yes' ? '<p class="travnote" style="margin-top:.4rem">* Bilingual Spanish/English MC services will be confirmed during your consultation.</p>' : ''}
+
+    <div class="alt-contact">
+      <span>Prefer to text?</span>
+      <a class="txt-link" href="${buildSMSLink(primary)}">Text us instead</a>
+    </div>
+
+    <button class="brst" id="brst">← Start over</button>
+  </div>`;
+
+  document.getElementById('brst').addEventListener('click', () => { ans = {}; step = 0; render(); });
+}
+
+render();
+</script>
+</body>
+</html>
