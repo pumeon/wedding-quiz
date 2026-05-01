@@ -101,12 +101,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .pkinc li{padding-left:14px;position:relative}
 .pkinc li::before{content:'';position:absolute;left:0;top:10px;width:6px;height:1.5px;background:var(--mint)}
 .pkbest{font-size:11px;color:var(--text-tertiary);margin-top:9px;font-style:italic}
-.pk-cta-hint{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent);margin-top:12px;padding-top:10px;border-top:.5px solid var(--border)}
-.cocktail-note{font-size:11px;color:#1a5c42;background:var(--mint-light);margin-top:9px;padding:8px 10px;border-radius:var(--radius-sm);line-height:1.6}
-.peak-note{font-size:11px;color:#8a4d00;background:var(--orange-light);margin-top:6px;padding:8px 10px;border-radius:var(--radius-sm);line-height:1.6;border:1px solid rgba(240,160,85,.25)}
+.pk-cta-hint{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent);margin-top:12px;padding-top:10px;border-top:.5px solid var(--border);transition:all .2s}
 .compare-btn{display:block;width:100%;margin:.5rem 0 1rem;padding:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--accent);background:none;border:1px dashed var(--border-hover);border-radius:var(--radius-md);cursor:pointer;transition:background .2s,border-color .2s;text-align:center}
 .compare-btn:hover{background:var(--mint-light);border-color:var(--mint)}
 .compare-table{border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:1rem;animation:fadeUp .3s ease both}
+.cocktail-note{font-size:11px;color:#1a5c42;background:var(--mint-light);margin-top:9px;padding:8px 10px;border-radius:var(--radius-sm);line-height:1.6}
+.peak-note{font-size:11px;color:#8a4d00;background:var(--orange-light);margin-top:6px;padding:8px 10px;border-radius:var(--radius-sm);line-height:1.6;border:1px solid rgba(240,160,85,.25)}
 .addons-box{border:1px solid var(--border);border-radius:var(--radius-md);padding:13px 16px;margin-bottom:1.2rem}
 .addons-ttl{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:10px}
 .addons-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px}
@@ -150,6 +150,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .ty-cal{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:12px 26px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-md);cursor:pointer;text-decoration:none;transition:opacity .2s;display:inline-block;box-shadow:0 3px 12px rgba(61,90,107,.22)}
 .ty-cal:hover{opacity:.88}
 .ty-social{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.back-results-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 22px;background:none;border:1.5px solid var(--accent);color:var(--accent);border-radius:var(--radius-md);cursor:pointer;transition:background .2s;display:inline-block}
+.back-results-btn:hover{background:var(--mint-light);border-color:var(--mint);color:var(--mint)}
 .ty-restart{font-size:12px;color:var(--text-tertiary);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px}
 .ty-restart:hover{color:var(--text-primary)}
 @media(max-width:600px){
@@ -793,14 +795,29 @@ function renderResult(body, prog, pl) {
     '<div class="notes"><strong>Before you book</strong>50% retainer required to secure your date &nbsp;&middot;&nbsp; Final payment due 48 hrs before event &nbsp;&middot;&nbsp; Overtime billed at contracted rate &nbsp;&middot;&nbsp; Setup & teardown not counted toward service hours &nbsp;&middot;&nbsp; Receipts provided for all transactions</div>' +
     ((ans.location === 'travel' || ans.location === 'vineyard') ? '<p class="travnote">* Your venue is outside Sacramento metro &mdash; a travel fee will be reflected in your final quote.</p>' : '') +
     '<div class="alt-contact"><span>Prefer to text?</span><a class="txt-link" href="' + buildSMSLink(primary) + '">Text us instead</a></div>' +
-    '<button class="brst" id="brst">&#8592; Start over</button>' +
+    '<button class="brst" id="brst">Start over from beginning</button>' +
     '</div>';
 
   document.querySelectorAll('.pkcard').forEach(function(card) {
     card.addEventListener('click', function(e) {
       e.preventDefault();
-      window.location.href = card.getAttribute('href');
-      setTimeout(function() { showThankyou = true; render(); }, 500);
+      // Open email client without leaving the results page
+      var link = document.createElement('a');
+      link.href = card.getAttribute('href');
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // Show a subtle inline confirmation instead of navigating away
+      var hint = card.querySelector('.pk-cta-hint');
+      if (hint) {
+        hint.innerHTML = '&#10003; Email app opened! Send your message and Tony will be in touch within 24-48 hrs.';
+        hint.style.color = '#1a5c42';
+        hint.style.background = 'var(--mint-light)';
+        hint.style.padding = '8px 10px';
+        hint.style.borderRadius = 'var(--radius-sm)';
+        hint.style.marginTop = '10px';
+      }
     });
   });
   var cb = document.getElementById('compare-btn');
@@ -847,10 +864,13 @@ function renderThankyou(body, prog, pl) {
         '<a class="social-link web" href="' + WEBSITE + '" target="_blank" rel="noopener" style="font-size:12px;padding:7px 14px;">' + iconGlobe() + 'Visit pumeon.net</a>' +
         '<a class="social-link ig" href="' + INSTAGRAM + '" target="_blank" rel="noopener" style="font-size:12px;padding:7px 14px;">' + iconIG() + 'Follow on Instagram</a>' +
       '</div>' +
-      '<button class="ty-restart" id="ty-restart">&#8592; Start over</button>' +
+      '<button class="back-results-btn" id="back-to-results">&#8592; Back to my results</button>' +
+    '<button class="ty-restart" id="ty-restart">Start over from beginning</button>' +
     '</div>' +
     '</div>';
   document.getElementById('ty-restart').addEventListener('click', function() { ans = {}; step = 0; showThankyou = false; showLoading = false; render(); });
+  var backToResults = document.getElementById('back-to-results');
+  if (backToResults) { backToResults.addEventListener('click', function() { showThankyou = false; render(); }); }
 }
 
 render();
