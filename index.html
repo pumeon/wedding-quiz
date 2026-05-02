@@ -101,7 +101,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-prim
 .pkinc li{padding-left:14px;position:relative}
 .pkinc li::before{content:'';position:absolute;left:0;top:10px;width:6px;height:1.5px;background:var(--mint)}
 .pkbest{font-size:11px;color:var(--text-tertiary);margin-top:9px;font-style:italic}
-.pk-cta-hint{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent);margin-top:12px;padding-top:10px;border-top:.5px solid var(--border);transition:all .2s}
+.pk-cta-hint{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent);margin-top:12px;padding-top:10px;border-top:.5px solid var(--border);transition:all .25s}
 .compare-btn{display:block;width:100%;margin:.5rem 0 1rem;padding:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--accent);background:none;border:1px dashed var(--border-hover);border-radius:var(--radius-md);cursor:pointer;transition:background .2s,border-color .2s;text-align:center}
 .compare-btn:hover{background:var(--mint-light);border-color:var(--mint)}
 .compare-table{border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:1rem;animation:fadeUp .3s ease both}
@@ -277,12 +277,12 @@ const ALL_QS = [
   },
   {
     id: 'speeches', multi: false, label: 'Step 6',
-    question: 'Will there be speeches, toasts, or live performances?',
-    hint: 'This helps us make sure you have the right number of microphones for every moment.',
+    question: 'Will there be speeches or live performances at your reception?',
+    hint: 'Think dinner toasts, parent speeches, or a surprise performer. This helps us get the right number of mics on-site.',
     opts: [
-      { label: 'Yes, speeches and toasts', sub: 'We will need at least one extra mic', v: 'speeches' },
+      { label: 'Yes, toasts and speeches', sub: 'Extra mic ready for dinner and reception moments', v: 'speeches' },
       { label: 'Yes, plus a live performer', sub: 'We may need additional setup', v: 'performer' },
-      { label: 'No, just music', sub: 'Standard setup is perfect', v: 'none' },
+      { label: 'No speeches or performers', sub: 'Standard setup is perfect', v: 'none' },
       { label: 'Not sure yet', sub: 'We can plan this during consultation', v: 'maybe' }
     ]
   },
@@ -404,7 +404,7 @@ const ADDONS_MAP = {
   edits: 'Special song edits, $100'
 };
 
-let ans = {}, step = 0, showThankyou = false, showLoading = false;
+let ans = {}, step = 0, showThankyou = false, showLoading = false, testimonialIdx = 0;
 
 function getActiveQsNow() { return getActiveQs(ans); }
 
@@ -677,7 +677,7 @@ function renderResult(body, prog, pl) {
   var recs = recommend();
   var primary = PKGS[recs[0]];
   var secondary = recs[1] ? PKGS[recs[1]] : null;
-  var testimonial = TESTIMONIALS[Math.floor(Math.random() * TESTIMONIALS.length)];
+  var testimonial = TESTIMONIALS[testimonialIdx % TESTIMONIALS.length]; testimonialIdx++;
   var firstName = ans.firstName || 'there';
   var season = getSeasonInfo();
   var soon = isSoon();
@@ -801,22 +801,18 @@ function renderResult(body, prog, pl) {
   document.querySelectorAll('.pkcard').forEach(function(card) {
     card.addEventListener('click', function(e) {
       e.preventDefault();
-      // Open email client without leaving the results page
-      var link = document.createElement('a');
-      link.href = card.getAttribute('href');
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      // Show a subtle inline confirmation instead of navigating away
+      // Open mailto in new tab so results page stays visible
+      window.open(card.getAttribute('href'), '_blank');
+      // Show confirmation inside the card
       var hint = card.querySelector('.pk-cta-hint');
       if (hint) {
-        hint.innerHTML = '&#10003; Email app opened! Send your message and Tony will be in touch within 24-48 hrs.';
+        hint.innerHTML = '&#10003; Email app opened! Hit send and Tony will be in touch within 24-48 hrs.';
         hint.style.color = '#1a5c42';
         hint.style.background = 'var(--mint-light)';
         hint.style.padding = '8px 10px';
-        hint.style.borderRadius = 'var(--radius-sm)';
+        hint.style.borderRadius = '6px';
         hint.style.marginTop = '10px';
+        hint.style.fontSize = '12px';
       }
     });
   });
